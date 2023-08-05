@@ -1,0 +1,9 @@
+obj
+UserSettings
+.vsconfig
+Assembly-CSharp.csproj
+FitnessCounter.sln
+.vs
+.vscode
+Library
+Logs
