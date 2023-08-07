@@ -126,7 +126,19 @@ public class Timer : MonoBehaviour
                         {
                             if (timer % 1000 == 0)
                             {
-                                PlayCounterAudio(timer / 1000 - 1);
+                                int audioIndex = timer / 1000 - 1;
+                                switch (state)
+                                {
+                                    case State.Fitness:
+                                        StartCoroutine(PlayerAudio(audioIndex));
+                                        break;
+                                    case State.Rest:
+                                        if (timer <= 5000)
+                                        {
+                                            StartCoroutine(PlayerAudio(audioIndex));
+                                        }
+                                        break;
+                                }
                             }
                         }
                         else if (timer <= 11000)
@@ -317,11 +329,38 @@ public class Timer : MonoBehaviour
 #endif
     }
 
+    private void OnApplicationFocus(bool focus)
+    {
+        switch (state)
+        {
+            case State.Prepare:
+                break;
+            case State.Fitness:
+            case State.Rest:
+                state = !focus ? State.Pause : state;
+                break;
+            case State.Pause:
+                break;
+        }
+        UpdateControlText();
+    }
+
     public void SaveTime()
     {
         PlayerPrefs.SetInt(FITNESS_KEY, fitnessTime);
         PlayerPrefs.SetInt(REST_KEY, restTime);
         inputFitness.transform.parent.gameObject.SetActive(false);
         updateTimerEnable = true;
+    }
+
+    System.Collections.IEnumerator PlayerAudio(int index)
+    {
+        float t = 0.05f;
+        while (t >= 0f)
+        {
+            t -= Time.deltaTime;
+            yield return null;
+        }
+        PlayCounterAudio(index);
     }
 }
