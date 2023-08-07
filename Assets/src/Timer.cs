@@ -114,7 +114,7 @@ public class Timer : MonoBehaviour
                         if (timer == 0)
                         {
                             PlayStartAudio();
-                            if (state == State.Rest)
+                            if (state == State.Fitness)
                             {
                                 ++completeCount;
                                 UpdateCompleteText();
