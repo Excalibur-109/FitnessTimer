@@ -7,3 +7,6 @@ FitnessCounter.sln
 .vscode
 Library
 Logs
+/*.sln
+/Temp/UnityLockfile
+Temp
