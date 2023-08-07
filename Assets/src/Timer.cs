@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Timer : MonoBehaviour
 {
@@ -77,11 +79,13 @@ public class Timer : MonoBehaviour
         timerType = PlayerPrefs.HasKey(TIMERTYPE_KEY) ? (TimerType)PlayerPrefs.GetInt(TIMERTYPE_KEY) : TimerType.CircularFitness;
         inputFitness.onEndEdit.AddListener((content) => 
         {
-            fitnessTime = int.Parse(content);
+            fitnessTime = int.Parse(content) * 1000;
+            ResetTimer();
         });
         inputRest.onEndEdit.AddListener((content) => 
         {
-            restTime = int.Parse(content);
+            restTime = int.Parse(content) * 1000;
+            ResetTimer();
         });
         ResetAction();
     }
@@ -107,10 +111,9 @@ public class Timer : MonoBehaviour
                     break;
                 case TimerType.CircularFitness:
                     {
-                        timer -= 1;
                         if (timer == 0)
                         {
-                            audioSrc.PlayOneShot(startClip);
+                            PlayStartAudio();
                             if (state == State.Rest)
                             {
                                 ++completeCount;
@@ -121,7 +124,7 @@ public class Timer : MonoBehaviour
                         }
                         else if (timer <= 10000)
                         {
-                            if ((timer + 1000) % 1000 == 0)
+                            if (timer % 1000 == 0)
                             {
                                 PlayCounterAudio(timer / 1000 - 1);
                             }
@@ -131,6 +134,7 @@ public class Timer : MonoBehaviour
                             timerImg.color = Color.Lerp(colors[0], colors[1], 1f - (timer - 10000) / 1000f);
                         }
                         UpdateFillAmount(state == State.Fitness ? (float)timer / fitnessTime : (float)timer / restTime);
+                        timer -= 1;
                     }
                     break;
             }
@@ -145,7 +149,7 @@ public class Timer : MonoBehaviour
 
     void UpdateCompleteText()
     {
-        completeText.text = string.Format("已完成：<color=#>{0}次</color>", completeCount);
+        completeText.text = string.Format("已完成：<color=#00FF00>{0}次</color>", completeCount);
     }
 
     void UpdateControlText()
@@ -180,6 +184,7 @@ public class Timer : MonoBehaviour
         if (audioClips != null && audioClips.Count > 0 && index >= 0 && index < audioClips[audioGroupIndex].Count)
         {
             audioSrc.PlayOneShot(audioClips[audioGroupIndex][index]);
+            Debug.Log($"播放索引为{index}的拼音");
         }
     }
 
